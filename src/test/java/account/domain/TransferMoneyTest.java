@@ -8,6 +8,7 @@ import account.persistence.InMemoryAccountRepository;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,6 +31,19 @@ public class TransferMoneyTest {
         assertEquals(fromAccountId, debitEvent.getAccountId());
         assertEquals(amount, creditEvent.getAmount());
         assertEquals(toAccountId, creditEvent.getAccountId());
+
+    }
+
+    @Test
+    public void afterTransferenceOnlyOneEventIsAddedToEachAccount(){
+
+        new TransferMoney(accountRepository).transfer(fromAccountId, toAccountId, amount);
+
+        List<TransactionEvent> senderAccountEvents = accountRepository.findTransactionsById(fromAccountId);
+        List<TransactionEvent> receiverAccountEvents = accountRepository.findTransactionsById(toAccountId);
+
+        assertEquals(1, senderAccountEvents.size());
+        assertEquals(1, receiverAccountEvents.size());
 
     }
 
