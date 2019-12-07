@@ -1,9 +1,8 @@
 package account.domain;
 
 import account.domain.VOs.AccountId;
+import account.domain.VOs.TransactionEvents;
 import account.domain.entities.TransactionEvent;
-
-import java.util.List;
 
 public interface AccountRepository {
 

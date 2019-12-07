@@ -1,6 +1,6 @@
 package account.persistence;
 
-import account.domain.TransactionEvents;
+import account.domain.VOs.TransactionEvents;
 import account.domain.VOs.AccountId;
 import account.domain.AccountRepository;
 import account.domain.entities.TransactionEvent;
@@ -17,7 +17,7 @@ public class InMemoryAccountRepository implements AccountRepository {
 
 
     public TransactionEvents findTransactionsById(AccountId accountId) {
-        return eventsByAccount.get(accountId);
+        return eventsByAccount.getOrDefault(accountId, TransactionEvents.createEmpty());
     }
 
     @Override

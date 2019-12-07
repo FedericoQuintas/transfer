@@ -23,4 +23,8 @@ public class Amount {
     public int hashCode() {
         return Objects.hash(value);
     }
+
+    public BigDecimal asBigDecimal() {
+        return value;
+    }
 }
