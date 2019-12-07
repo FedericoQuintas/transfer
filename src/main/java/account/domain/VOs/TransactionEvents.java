@@ -27,10 +27,15 @@ public class TransactionEvents {
     }
 
     public boolean hasEnoughRunningBalanceFor(Amount amount) {
-       return 0 < amount.asBigDecimal().compareTo(calculateRunningBalance(events)) ;
+       return 0 >= amount.asBigDecimal().compareTo(calculateRunningBalance(events)) ;
     }
 
     private static BigDecimal calculateRunningBalance(List<TransactionEvent> events) {
         return events.stream().map(TransactionEvent::calculateAmountForBalanceCalculation).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+    public Balance calculateRunningBalance() {
+        return new Balance(calculateRunningBalance(this.events));
+    }
+
 }

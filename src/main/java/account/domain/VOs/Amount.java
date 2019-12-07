@@ -11,6 +11,10 @@ public class Amount {
         this.value = value;
     }
 
+    public static Amount valueOf(BigDecimal value) {
+        return new Amount(value);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

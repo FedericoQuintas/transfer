@@ -36,7 +36,7 @@ public class TransferMoneyTest {
     @Test
     public void transferenceCreatesOneDebitAndOneCreditTransactions() throws ExecutionException, InterruptedException {
 
-        addEventToRepository(fromAccountId, TransactionType.CREDIT);
+        addEventToRepository(fromAccountId, TransactionType.CREDIT, amount);
 
         TransferMoneyResult result = transferMoney.transfer(fromAccountId, toAccountId, amount).get();
 
@@ -54,7 +54,7 @@ public class TransferMoneyTest {
     @Test
     public void afterTransferenceOnlyOneEventIsAddedToEachAccount() throws ExecutionException, InterruptedException {
 
-        addEventToRepository(fromAccountId, TransactionType.CREDIT);
+        addEventToRepository(fromAccountId, TransactionType.CREDIT, amount);
 
         transferMoney.transfer(fromAccountId, toAccountId, amount);
 
@@ -86,15 +86,15 @@ public class TransferMoneyTest {
     @Test
     public void onlyCreditEventsCountForBalance() throws ExecutionException, InterruptedException {
 
-        addEventToRepository(fromAccountId, TransactionType.DEBIT);
-        addEventToRepository(fromAccountId, TransactionType.CREDIT);
+        addEventToRepository(fromAccountId, TransactionType.DEBIT, amount);
+        addEventToRepository(fromAccountId, TransactionType.CREDIT, amount);
 
         TransferMoneyResult transferMoneyResult = transferMoney.transfer(fromAccountId, toAccountId, amount).get();
 
         assertFalse(transferMoneyResult.isSuccessful());
     }
 
-    private void addEventToRepository(AccountId fromAccountId, TransactionType type) {
+    private void addEventToRepository(AccountId fromAccountId, TransactionType type, Amount amount) {
         accountRepository.add(TransactionEventFactory.create(fromAccountId, amount, type));
     }
 

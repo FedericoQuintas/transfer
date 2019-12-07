@@ -17,16 +17,15 @@ public class TransferMoney {
 
     public CompletableFuture<TransferMoneyResult> transfer(AccountId fromAccountId, AccountId toAccountId, Amount amount) {
 
-        return accountRepository.findTransactionsById(fromAccountId).thenApply(transactionsById -> {
-            if (transactionsById.hasEnoughRunningBalanceFor(amount)) {
-                return errorResponse();
-            }
+            return accountRepository.findTransactionsById(fromAccountId).thenApply(transactionsById -> {
+                if (!transactionsById.hasEnoughRunningBalanceFor(amount)) {
+                    return errorResponse();
+                }
 
-            accountRepository.add(createTransactionEvent(fromAccountId, amount, TransactionType.DEBIT));
-            accountRepository.add(createTransactionEvent(toAccountId, amount, TransactionType.CREDIT));
-            return successfulResponse();
-        });
-
+                accountRepository.add(createTransactionEvent(fromAccountId, amount, TransactionType.DEBIT));
+                accountRepository.add(createTransactionEvent(toAccountId, amount, TransactionType.CREDIT));
+                return successfulResponse();
+            });
     }
 
     private static TransferMoneyResult successfulResponse() {

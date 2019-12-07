@@ -7,7 +7,6 @@ import account.domain.entities.TransactionEvent;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 public class InMemoryAccountRepository implements AccountRepository {
 
