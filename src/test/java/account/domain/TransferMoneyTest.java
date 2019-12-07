@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -33,14 +34,14 @@ public class TransferMoneyTest {
     }
 
     @Test
-    public void transferenceCreatesOneDebitAndOneCreditTransactions(){
+    public void transferenceCreatesOneDebitAndOneCreditTransactions() throws ExecutionException, InterruptedException {
 
         accountRepository.add(TransactionEventFactory.create(fromAccountId, amount, TransactionType.CREDIT));
 
-        TransferMoneyResult result = transferMoney.transfer(fromAccountId, toAccountId, amount);
+        TransferMoneyResult result = transferMoney.transfer(fromAccountId, toAccountId, amount).get();
 
-        TransactionEvent debitEvent = accountRepository.findTransactionsById(fromAccountId).asList().get(0);
-        TransactionEvent creditEvent = accountRepository.findTransactionsById(toAccountId).asList().get(0);
+        TransactionEvent debitEvent = accountRepository.findTransactionsById(fromAccountId).get().asList().get(0);
+        TransactionEvent creditEvent = accountRepository.findTransactionsById(toAccountId).get().asList().get(0);
 
         assertEquals(amount, debitEvent.getAmount());
         assertEquals(fromAccountId, debitEvent.getAccountId());
@@ -51,14 +52,14 @@ public class TransferMoneyTest {
     }
 
     @Test
-    public void afterTransferenceOnlyOneEventIsAddedToEachAccount(){
+    public void afterTransferenceOnlyOneEventIsAddedToEachAccount() throws ExecutionException, InterruptedException {
 
         accountRepository.add(TransactionEventFactory.create(fromAccountId, amount, TransactionType.CREDIT));
 
         transferMoney.transfer(fromAccountId, toAccountId, amount);
 
-        List<TransactionEvent> senderAccountEvents = accountRepository.findTransactionsById(fromAccountId).asList();
-        List<TransactionEvent> receiverAccountEvents = accountRepository.findTransactionsById(toAccountId).asList();
+        List<TransactionEvent> senderAccountEvents = accountRepository.findTransactionsById(fromAccountId).get().asList();
+        List<TransactionEvent> receiverAccountEvents = accountRepository.findTransactionsById(toAccountId).get().asList();
 
         assertEquals(2, senderAccountEvents.size());
         assertEquals(1, receiverAccountEvents.size());
@@ -66,18 +67,18 @@ public class TransferMoneyTest {
     }
 
     @Test
-    public void cannotTransferMoreThanRunningBalance(){
-        TransferMoneyResult result = transferMoney.transfer(fromAccountId, toAccountId, amount);
+    public void cannotTransferMoreThanRunningBalance() throws ExecutionException, InterruptedException {
+        TransferMoneyResult result = transferMoney.transfer(fromAccountId, toAccountId, amount).get();
         assertFalse(result.isSuccessful());
     }
 
     @Test
-    public void eventsAreNotAddedWhenTransfersMoreThanRunningBalance(){
+    public void eventsAreNotAddedWhenTransfersMoreThanRunningBalance() throws ExecutionException, InterruptedException {
 
         transferMoney.transfer(fromAccountId, toAccountId, amount);
 
-        List<TransactionEvent> senderAccountEvents = accountRepository.findTransactionsById(fromAccountId).asList();
-        List<TransactionEvent> receiverAccountEvents = accountRepository.findTransactionsById(toAccountId).asList();
+        List<TransactionEvent> senderAccountEvents = accountRepository.findTransactionsById(fromAccountId).get().asList();
+        List<TransactionEvent> receiverAccountEvents = accountRepository.findTransactionsById(toAccountId).get().asList();
         assertEquals(0, senderAccountEvents.size());
         assertEquals(0, receiverAccountEvents.size());
     }

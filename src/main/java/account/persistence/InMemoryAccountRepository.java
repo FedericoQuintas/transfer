@@ -6,6 +6,8 @@ import account.domain.AccountRepository;
 import account.domain.entities.TransactionEvent;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 public class InMemoryAccountRepository implements AccountRepository {
 
@@ -16,8 +18,8 @@ public class InMemoryAccountRepository implements AccountRepository {
     }
 
 
-    public TransactionEvents findTransactionsById(AccountId accountId) {
-        return eventsByAccount.getOrDefault(accountId, TransactionEvents.createEmpty());
+    public CompletableFuture<TransactionEvents> findTransactionsById(AccountId accountId) {
+        return CompletableFuture.completedFuture(eventsByAccount.getOrDefault(accountId, TransactionEvents.createEmpty()));
     }
 
     @Override

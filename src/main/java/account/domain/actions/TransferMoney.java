@@ -5,6 +5,8 @@ import account.domain.VOs.*;
 import account.domain.entities.TransactionEvent;
 import account.domain.factories.TransactionEventFactory;
 
+import java.util.concurrent.CompletableFuture;
+
 public class TransferMoney {
 
     private AccountRepository accountRepository;
@@ -13,16 +15,18 @@ public class TransferMoney {
         this.accountRepository = accountRepository;
     }
 
-    public TransferMoneyResult transfer(AccountId fromAccountId, AccountId toAccountId, Amount amount) {
+    public CompletableFuture<TransferMoneyResult> transfer(AccountId fromAccountId, AccountId toAccountId, Amount amount) {
 
-        TransactionEvents transactionsById = accountRepository.findTransactionsById(fromAccountId);
-        if(transactionsById.hasEnoughRunningBalanceFor(amount)){
-            return errorResponse();
-        }
+        return accountRepository.findTransactionsById(fromAccountId).thenApply(transactionsById -> {
+            if (transactionsById.hasEnoughRunningBalanceFor(amount)) {
+                return errorResponse();
+            }
 
-        accountRepository.add(createTransactionEvent(fromAccountId, amount, TransactionType.DEBIT));
-        accountRepository.add(createTransactionEvent(toAccountId, amount, TransactionType.CREDIT));
-        return successfulResponse();
+            accountRepository.add(createTransactionEvent(fromAccountId, amount, TransactionType.DEBIT));
+            accountRepository.add(createTransactionEvent(toAccountId, amount, TransactionType.CREDIT));
+            return successfulResponse();
+        });
+
     }
 
     private static TransferMoneyResult successfulResponse() {
