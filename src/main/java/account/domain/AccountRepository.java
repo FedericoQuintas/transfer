@@ -6,7 +6,8 @@ import account.domain.entities.TransactionEvent;
 import java.util.List;
 
 public interface AccountRepository {
-    List<TransactionEvent> findTransactionsById(AccountId accountId);
+
+    TransactionEvents findTransactionsById(AccountId accountId);
 
     void add(TransactionEvent transactionEvent);
 }

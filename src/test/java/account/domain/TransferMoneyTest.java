@@ -24,8 +24,8 @@ public class TransferMoneyTest {
 
         new TransferMoney(accountRepository).transfer(fromAccountId, toAccountId, amount);
 
-        TransactionEvent debitEvent = accountRepository.findTransactionsById(fromAccountId).get(0);
-        TransactionEvent creditEvent = accountRepository.findTransactionsById(toAccountId).get(0);
+        TransactionEvent debitEvent = accountRepository.findTransactionsById(fromAccountId).asList().get(0);
+        TransactionEvent creditEvent = accountRepository.findTransactionsById(toAccountId).asList().get(0);
 
         assertEquals(amount, debitEvent.getAmount());
         assertEquals(fromAccountId, debitEvent.getAccountId());
@@ -39,8 +39,8 @@ public class TransferMoneyTest {
 
         new TransferMoney(accountRepository).transfer(fromAccountId, toAccountId, amount);
 
-        List<TransactionEvent> senderAccountEvents = accountRepository.findTransactionsById(fromAccountId);
-        List<TransactionEvent> receiverAccountEvents = accountRepository.findTransactionsById(toAccountId);
+        List<TransactionEvent> senderAccountEvents = accountRepository.findTransactionsById(fromAccountId).asList();
+        List<TransactionEvent> receiverAccountEvents = accountRepository.findTransactionsById(toAccountId).asList();
 
         assertEquals(1, senderAccountEvents.size());
         assertEquals(1, receiverAccountEvents.size());
