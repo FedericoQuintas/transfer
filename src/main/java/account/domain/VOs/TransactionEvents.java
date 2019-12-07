@@ -1,7 +1,5 @@
 package account.domain.VOs;
 
-import account.domain.entities.TransactionEvent;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +8,7 @@ public class TransactionEvents {
 
     private List<TransactionEvent> events;
 
-    public TransactionEvents() {
+    private TransactionEvents() {
         this.events = new ArrayList<>();
     }
 

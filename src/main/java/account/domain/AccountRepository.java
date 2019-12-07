@@ -2,14 +2,14 @@ package account.domain;
 
 import account.domain.VOs.AccountId;
 import account.domain.VOs.TransactionEvents;
-import account.domain.entities.TransactionEvent;
+import account.domain.entities.Account;
+import account.domain.VOs.TransactionEvent;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 public interface AccountRepository {
 
-    CompletableFuture<TransactionEvents> findTransactionsById(AccountId accountId);
+    void add(Account account);
 
-    void add(TransactionEvent transactionEvent);
+    CompletableFuture<Account> findAccountById(AccountId fromAccountId);
 }

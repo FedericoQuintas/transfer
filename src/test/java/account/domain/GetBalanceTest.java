@@ -1,8 +1,9 @@
 package account.domain;
 
 import account.domain.VOs.*;
-import account.domain.actions.GetAccountBalance;
-import account.domain.factories.TransactionEventFactory;
+import account.domain.services.GetAccountBalanceService;
+import account.domain.entities.Account;
+import account.domain.factories.AccountFactory;
 import account.persistence.InMemoryAccountRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,46 +18,54 @@ public class GetBalanceTest {
     private AccountRepository accountRepository;
     private AccountId accountId = new AccountId(1L);
     private Amount amount = new Amount(BigDecimal.valueOf(1L));
-    private GetAccountBalance getAccountBalance;
+    private GetAccountBalanceService getAccountBalanceService;
 
     @Before
     public void before(){
         accountRepository = new InMemoryAccountRepository();
-        getAccountBalance = new GetAccountBalance(accountRepository);
+        getAccountBalanceService = new GetAccountBalanceService(accountRepository);
     }
 
     @Test
     public void calculatesBalanceWithOnlyOneCreditEvent() throws ExecutionException, InterruptedException {
 
-        addEventToRepository(accountId, TransactionType.CREDIT, amount);
+        addCreditEventToAccount(AccountFactory.create(accountId), amount);
 
-        GetBalanceResult result = getAccountBalance.get(accountId).get();
+        GetBalanceResult result = getAccountBalanceService.get(accountId).get();
 
         assertEquals(BigDecimal.ONE, result.getCurrentBalance().asBigDecimal());
+        assertTrue(result.isSuccessful());
     }
 
     @Test
     public void calculatesBalanceWithOnlyOneCreditAndOneDebitEvents() throws ExecutionException, InterruptedException {
 
-        addEventToRepository(accountId, TransactionType.CREDIT, amount);
-        addEventToRepository(accountId, TransactionType.DEBIT, amount);
+        Account account = AccountFactory.create(accountId);
+        addCreditEventToAccount(account, amount);
+        addDebitEventToAccount(account, amount);
 
-        GetBalanceResult result = getAccountBalance.get(accountId).get();
+        GetBalanceResult result = getAccountBalanceService.get(accountId).get();
 
         assertEquals(BigDecimal.ZERO, result.getCurrentBalance().asBigDecimal());
     }
 
     @Test
-    public void returnsZeroIfAccountDoesNotExist() throws ExecutionException, InterruptedException {
+    public void returnsErrorIfAccountDoesNotExist() throws ExecutionException, InterruptedException {
 
-        GetBalanceResult result = getAccountBalance.get(accountId).get();
+        GetBalanceResult result = getAccountBalanceService.get(accountId).get();
 
-        assertEquals(BigDecimal.ZERO, result.getCurrentBalance().asBigDecimal());
+        assertFalse(result.isSuccessful());
 
     }
 
-    private void addEventToRepository(AccountId fromAccountId, TransactionType type, Amount amount) {
-        accountRepository.add(TransactionEventFactory.create(fromAccountId, amount, type));
+    private void addCreditEventToAccount(Account account, Amount amount) {
+        account.addCreditEvent(amount);
+        accountRepository.add(account);
+    }
+
+    private void addDebitEventToAccount(Account account, Amount amount) {
+        account.addDebitEvent(amount);
+        accountRepository.add(account);
     }
 
 }
