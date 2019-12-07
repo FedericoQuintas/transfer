@@ -13,7 +13,6 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;
@@ -37,7 +36,7 @@ public class TransferMoneyTest {
     @Test
     public void transferenceCreatesOneDebitAndOneCreditTransactions() throws ExecutionException, InterruptedException {
 
-        accountRepository.add(TransactionEventFactory.create(fromAccountId, amount, TransactionType.CREDIT));
+        addEventToRepository(fromAccountId, TransactionType.CREDIT);
 
         TransferMoneyResult result = transferMoney.transfer(fromAccountId, toAccountId, amount).get();
 
@@ -55,7 +54,7 @@ public class TransferMoneyTest {
     @Test
     public void afterTransferenceOnlyOneEventIsAddedToEachAccount() throws ExecutionException, InterruptedException {
 
-        accountRepository.add(TransactionEventFactory.create(fromAccountId, amount, TransactionType.CREDIT));
+        addEventToRepository(fromAccountId, TransactionType.CREDIT);
 
         transferMoney.transfer(fromAccountId, toAccountId, amount);
 
@@ -86,12 +85,17 @@ public class TransferMoneyTest {
 
     @Test
     public void onlyCreditEventsCountForBalance() throws ExecutionException, InterruptedException {
-        accountRepository.add(TransactionEventFactory.create(fromAccountId, amount, TransactionType.DEBIT));
+
+        addEventToRepository(fromAccountId, TransactionType.DEBIT);
 
         TransferMoneyResult transferMoneyResult = transferMoney.transfer(fromAccountId, toAccountId, amount).get();
 
         assertFalse(transferMoneyResult.isSuccessful());
     }
+    
 
+    private void addEventToRepository(AccountId fromAccountId, TransactionType type) {
+        accountRepository.add(TransactionEventFactory.create(fromAccountId, amount, type));
+    }
 
 }
