@@ -28,11 +28,11 @@ public class TransferMoneyService {
     }
 
     private static TransferMoneyResult successfulResponse() {
-        return new TransferMoneyResult(TransferMoneyResultType.SUCCESS);
+        return TransferMoneyResult.createSuccessful();
     }
 
     private static TransferMoneyResult errorResponse() {
-        return new TransferMoneyResult(TransferMoneyResultType.ERROR);
+        return TransferMoneyResult.createError();
     }
 
 }
