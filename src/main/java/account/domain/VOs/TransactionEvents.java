@@ -31,6 +31,6 @@ public class TransactionEvents {
     }
 
     private static BigDecimal calculateRunningBalance(List<TransactionEvent> events) {
-        return events.stream().map(event-> event.getAmount().asBigDecimal()).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return events.stream().filter(event-> event.isCredit()).map(event-> event.getAmount().asBigDecimal()).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

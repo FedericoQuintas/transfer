@@ -23,4 +23,8 @@ public class TransactionEvent {
     public AccountId getAccountId() {
         return accountId;
     }
+
+    public boolean isCredit() {
+        return this.type.equals(TransactionType.CREDIT);
+    }
 }

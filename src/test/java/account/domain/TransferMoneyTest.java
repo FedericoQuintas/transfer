@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;
@@ -81,6 +82,15 @@ public class TransferMoneyTest {
         List<TransactionEvent> receiverAccountEvents = accountRepository.findTransactionsById(toAccountId).get().asList();
         assertEquals(0, senderAccountEvents.size());
         assertEquals(0, receiverAccountEvents.size());
+    }
+
+    @Test
+    public void onlyCreditEventsCountForBalance() throws ExecutionException, InterruptedException {
+        accountRepository.add(TransactionEventFactory.create(fromAccountId, amount, TransactionType.DEBIT));
+
+        TransferMoneyResult transferMoneyResult = transferMoney.transfer(fromAccountId, toAccountId, amount).get();
+
+        assertFalse(transferMoneyResult.isSuccessful());
     }
 
 
