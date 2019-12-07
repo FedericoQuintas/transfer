@@ -4,6 +4,8 @@ import account.domain.VOs.AccountId;
 import account.domain.VOs.TransactionType;
 import account.domain.VOs.Amount;
 
+import java.math.BigDecimal;
+
 public class TransactionEvent {
 
     private final TransactionType type;
@@ -26,5 +28,12 @@ public class TransactionEvent {
 
     public boolean isCredit() {
         return this.type.equals(TransactionType.CREDIT);
+    }
+
+    public BigDecimal calculateAmountForBalanceCalculation() {
+        if (isCredit()) {
+            return getAmount().asBigDecimal();
+        }
+        return getAmount().asBigDecimal().negate();
     }
 }

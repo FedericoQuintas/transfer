@@ -87,12 +87,12 @@ public class TransferMoneyTest {
     public void onlyCreditEventsCountForBalance() throws ExecutionException, InterruptedException {
 
         addEventToRepository(fromAccountId, TransactionType.DEBIT);
+        addEventToRepository(fromAccountId, TransactionType.CREDIT);
 
         TransferMoneyResult transferMoneyResult = transferMoney.transfer(fromAccountId, toAccountId, amount).get();
 
         assertFalse(transferMoneyResult.isSuccessful());
     }
-    
 
     private void addEventToRepository(AccountId fromAccountId, TransactionType type) {
         accountRepository.add(TransactionEventFactory.create(fromAccountId, amount, type));
