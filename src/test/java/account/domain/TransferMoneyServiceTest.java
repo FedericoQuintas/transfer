@@ -17,8 +17,8 @@ import static org.junit.Assert.*;
 public class TransferMoneyServiceTest {
 
     private AccountRepository accountRepository;
-    private AccountId fromAccountId = new AccountId(1L);
-    private AccountId toAccountId = new AccountId(2L);
+    private AccountId fromAccountId = new AccountId("1");
+    private AccountId toAccountId = new AccountId("2");
     private Amount amount = new Amount(BigDecimal.valueOf(1L));
     private TransferMoneyService transferMoneyService;
     private Account senderAccount;

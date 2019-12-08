@@ -3,14 +3,14 @@ package account.domain.VOs;
 import java.util.Objects;
 
 public class AccountId {
-    private long value;
+    private String value;
 
-    public AccountId(long value) {
+    public AccountId(String value) {
         this.value = value;
     }
 
     public static AccountId valueOf(String accountId) {
-        return new AccountId(Long.valueOf(accountId));
+        return new AccountId(accountId);
     }
 
     @Override
@@ -18,7 +18,7 @@ public class AccountId {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AccountId accountId = (AccountId) o;
-        return value == accountId.value;
+        return value.equals(accountId.value);
     }
 
     @Override

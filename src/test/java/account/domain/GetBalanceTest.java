@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 public class GetBalanceTest {
 
     private AccountRepository accountRepository;
-    private AccountId accountId = new AccountId(1L);
+    private AccountId accountId = new AccountId("1L");
     private Amount amount = new Amount(BigDecimal.valueOf(1L));
     private GetAccountBalanceService getAccountBalanceService;
 
