@@ -31,7 +31,7 @@ public class GetBalanceTest {
 
         addCreditEventToAccount(AccountFactory.create(accountId), amount);
 
-        GetBalanceResult result = getAccountBalanceService.get(accountId).get();
+        GetBalanceResponse result = getAccountBalanceService.get(accountId).get();
 
         assertEquals(BigDecimal.ONE, result.getCurrentBalance().asBigDecimal());
         assertTrue(result.isSuccessful());
@@ -44,7 +44,7 @@ public class GetBalanceTest {
         addCreditEventToAccount(account, amount);
         addDebitEventToAccount(account, amount);
 
-        GetBalanceResult result = getAccountBalanceService.get(accountId).get();
+        GetBalanceResponse result = getAccountBalanceService.get(accountId).get();
 
         assertEquals(BigDecimal.ZERO, result.getCurrentBalance().asBigDecimal());
     }
@@ -52,7 +52,7 @@ public class GetBalanceTest {
     @Test
     public void returnsErrorIfAccountDoesNotExist() throws ExecutionException, InterruptedException {
 
-        GetBalanceResult result = getAccountBalanceService.get(accountId).get();
+        GetBalanceResponse result = getAccountBalanceService.get(accountId).get();
 
         assertFalse(result.isSuccessful());
 

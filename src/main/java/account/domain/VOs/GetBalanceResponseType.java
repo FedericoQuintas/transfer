@@ -1,5 +1,5 @@
 package account.domain.VOs;
 
-public enum GetBalanceResultType {
+public enum GetBalanceResponseType {
    SUCCESS, ERROR;
 }

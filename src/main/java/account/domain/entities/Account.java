@@ -15,10 +15,12 @@ public class Account {
     }
 
     public void addDebitEvent(Amount amount) {
-        if (!transactionEvents.hasEnoughRunningBalanceFor(amount)) {
-            throw new NotEnoughCreditForOperationInvariant();
+        synchronized (transactionEvents) {
+            if (!transactionEvents.hasEnoughRunningBalanceFor(amount)) {
+                throw new NotEnoughCreditForOperationInvariant();
+            }
+            this.transactionEvents.add(createTransactionEvent(amount, TransactionType.DEBIT));
         }
-        this.transactionEvents.add(createTransactionEvent(amount, TransactionType.DEBIT));
     }
 
     private TransactionEvent createTransactionEvent(Amount amount, TransactionType type) {

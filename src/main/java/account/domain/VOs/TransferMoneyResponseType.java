@@ -1,6 +1,6 @@
 package account.domain.VOs;
 
-public enum TransferMoneyResultType {
+public enum TransferMoneyResponseType {
     SUCCESS, ERROR
 
 }

@@ -39,7 +39,7 @@ public class TransferMoneyServiceTest {
 
         senderAccount.addCreditEvent(amount);
 
-        TransferMoneyResult result = transferMoneyService.transfer(fromAccountId, toAccountId, amount).get();
+        TransferMoneyResponse result = transferMoneyService.transfer(fromAccountId, toAccountId, amount).get();
 
         TransactionEvent debitEvent = accountRepository.findAccountById(fromAccountId).get().getTransactionEvents().asList().get(1);
         TransactionEvent creditEvent = accountRepository.findAccountById(toAccountId).get().getTransactionEvents().asList().get(0);
@@ -72,7 +72,7 @@ public class TransferMoneyServiceTest {
 
     @Test
     public void cannotTransferMoreThanRunningBalance() throws ExecutionException, InterruptedException {
-        TransferMoneyResult result = transferMoneyService.transfer(fromAccountId, toAccountId, amount).get();
+        TransferMoneyResponse result = transferMoneyService.transfer(fromAccountId, toAccountId, amount).get();
         assertFalse(result.isSuccessful());
     }
 
@@ -94,9 +94,38 @@ public class TransferMoneyServiceTest {
         senderAccount.addCreditEvent(amount);
         senderAccount.addDebitEvent(amount);
 
-        TransferMoneyResult transferMoneyResult = transferMoneyService.transfer(fromAccountId, toAccountId, amount).get();
+        TransferMoneyResponse transferMoneyResult = transferMoneyService.transfer(fromAccountId, toAccountId, amount).get();
 
         assertFalse(transferMoneyResult.isSuccessful());
     }
+
+    @Test
+    public void returnsErrorIfSenderAccountDoesNotExist() throws ExecutionException, InterruptedException {
+
+        accountRepository = new InMemoryAccountRepository();
+        receiverAccount = AccountFactory.create(toAccountId);
+        accountRepository.add(receiverAccount);
+        transferMoneyService = new TransferMoneyService(accountRepository);
+
+        TransferMoneyResponse transferMoneyResult = transferMoneyService.transfer(fromAccountId, toAccountId, amount).get();
+
+        assertFalse(transferMoneyResult.isSuccessful());
+    }
+
+    @Test
+    public void returnsErrorIfReceiverAccountDoesNotExist() throws ExecutionException, InterruptedException {
+
+        accountRepository = new InMemoryAccountRepository();
+        senderAccount = AccountFactory.create(fromAccountId);
+        senderAccount.addCreditEvent(amount);
+        accountRepository.add(senderAccount);
+
+        transferMoneyService = new TransferMoneyService(accountRepository);
+
+        TransferMoneyResponse transferMoneyResult = transferMoneyService.transfer(fromAccountId, toAccountId, amount).get();
+
+        assertFalse(transferMoneyResult.isSuccessful());
+    }
+
 
 }

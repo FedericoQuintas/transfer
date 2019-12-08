@@ -2,7 +2,11 @@ package account.domain.services;
 
 import account.domain.*;
 import account.domain.VOs.*;
+import account.domain.entities.Account;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class TransferMoneyService {
@@ -13,26 +17,36 @@ public class TransferMoneyService {
         this.accountRepository = accountRepository;
     }
 
-    public CompletableFuture<TransferMoneyResult> transfer(AccountId fromAccountId, AccountId toAccountId, Amount amount) {
+    public CompletableFuture<TransferMoneyResponse> transfer(AccountId fromAccountId, AccountId toAccountId, Amount amount) {
 
-        return accountRepository.findAccountById(fromAccountId).thenApply(account -> {
+        List<AccountId> accountIds = Arrays.asList(fromAccountId, toAccountId);
+
+        return accountRepository.findAccountsById(accountIds)
+                .thenApply(accountsById -> {
+
+            if (anyOfBothAccountsDoesNotExist(fromAccountId, toAccountId, accountsById)) return errorResponse();
+
             try {
-                account.addDebitEvent(amount);
+                accountsById.get(fromAccountId).addDebitEvent(amount);
             } catch (NotEnoughCreditForOperationInvariant ex){
                 return errorResponse();
             }
-            accountRepository.findAccountById(toAccountId)
-                    .thenAccept(receiverAccount -> receiverAccount.addCreditEvent(amount));
+
+            accountsById.get(toAccountId).addCreditEvent(amount);
             return successfulResponse();
         });
     }
 
-    private static TransferMoneyResult successfulResponse() {
-        return TransferMoneyResult.createSuccessful();
+    private static boolean anyOfBothAccountsDoesNotExist(AccountId fromAccountId, AccountId toAccountId, Map<AccountId, Account> accountIds) {
+        return !accountIds.containsKey(fromAccountId) || !accountIds.containsKey(toAccountId);
     }
 
-    private static TransferMoneyResult errorResponse() {
-        return TransferMoneyResult.createError();
+    private static TransferMoneyResponse successfulResponse() {
+        return TransferMoneyResponse.createSuccessful();
+    }
+
+    private static TransferMoneyResponse errorResponse() {
+        return TransferMoneyResponse.createError();
     }
 
 }
