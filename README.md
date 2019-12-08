@@ -22,7 +22,7 @@ I wanted to use a framework to solve the web side, as it can bring good benefit 
 not pollute the Domain code. In this case is Vert.x but could have been any other at this scale.
 
 ## Dummy Data
-The Main class stores two dummy Accounts, one with one CREDIT event to be able to make a transference.
+The Main class stores two dummy Accounts (Ids 1 and 2), one with one CREDIT event to be able to make a transference.
 I assumed that creating the Account and depositing intial money would be out of scope as they are easier than
 the transfer flow and then less valuable for this exercise.
 
