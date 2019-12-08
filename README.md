@@ -1,6 +1,15 @@
 ## How to Run:
 mvn compile exec:java
 
+#localhost:8080/balance/1 GET
+
+#localhost:8080/transference POST
+{
+ "to_account_id":"2",
+ "from_account_id":"1",
+ "amount":1
+}
+
 ## Architecture
 The architecture consists on a core Domain, agnostic of the technologies we could use for
 persistence (at the moment memory) or as delivery mechanism (http). As it should have little
