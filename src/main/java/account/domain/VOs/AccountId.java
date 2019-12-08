@@ -9,6 +9,10 @@ public class AccountId {
         this.value = value;
     }
 
+    public static AccountId valueOf(String accountId) {
+        return new AccountId(Long.valueOf(accountId));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
