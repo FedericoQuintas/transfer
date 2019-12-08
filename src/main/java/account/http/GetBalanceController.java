@@ -11,9 +11,9 @@ import io.vertx.core.json.JsonObject;
 import java.util.concurrent.CompletableFuture;
 
 public class GetBalanceController {
-    public static final String BALANCE = "balance";
-    public static final String CONTENT_TYPE = "content-type";
-    public static final String APPLICATION_JSON_CHARSET_UTF_8 = "application/json;charset=utf-8";
+    private static final String BALANCE = "balance";
+    private static final String CONTENT_TYPE = "content-type";
+    private static final String APPLICATION_JSON_CHARSET_UTF_8 = "application/json;charset=utf-8";
     private GetAccountBalanceService getAccountBalanceService;
 
     public GetBalanceController(GetAccountBalanceService getAccountBalanceService) {

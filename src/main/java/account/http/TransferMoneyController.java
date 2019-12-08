@@ -13,11 +13,11 @@ import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
 
 public class TransferMoneyController {
-    public static final String CONTENT_TYPE = "content-type";
-    public static final String APPLICATION_JSON_CHARSET_UTF_8 = "application/json;charset=utf-8";
-    public static final String FROM_ACCOUNT_ID = "from_account_id";
-    public static final String TO_ACCOUNT_ID = "to_account_id";
-    public static final String AMOUNT = "amount";
+    private static final String CONTENT_TYPE = "content-type";
+    private static final String APPLICATION_JSON_CHARSET_UTF_8 = "application/json;charset=utf-8";
+    private static final String FROM_ACCOUNT_ID = "from_account_id";
+    private static final String TO_ACCOUNT_ID = "to_account_id";
+    private static final String AMOUNT = "amount";
     private TransferMoneyService transferMoneyService;
 
     public TransferMoneyController(TransferMoneyService transferMoneyService) {
