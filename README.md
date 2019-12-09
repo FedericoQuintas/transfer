@@ -16,6 +16,7 @@ persistence (at the moment memory) or as delivery mechanism (http). As it should
 reasons for changes due to changes in persistence, I decided to already define async interfaces
 for the repository even when in memory is not that useful, because the repository interface lives in
 the Domain package its stability should be high.
+The Balance is calculated by going through all the events. As it's an O(n) operation a quick improvement for the future would be to store checkpoints and count from there.
 
 ## Web framework
 I wanted to use a framework to solve the web side, as it can bring good benefit as long as it does
