@@ -1,9 +1,10 @@
 package account.http;
 
 import account.domain.VOs.AccountId;
-import account.domain.VOs.Balance;
-import account.domain.VOs.GetBalanceResponse;
-import account.domain.services.GetAccountBalanceService;
+import account.domain.VOs.Amount;
+import account.domain.VOs.TransferMoneyResponse;
+import account.domain.entities.Account;
+import account.domain.services.TransferMoneyService;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.Json;
@@ -18,66 +19,78 @@ import java.util.concurrent.CompletableFuture;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
-public class GetBalanceControllerTest {
+public class TransferMoneyControllerTest {
 
 
-    public static final String BALANCE = "balance";
-    private static GetAccountBalanceService getBalanceMock;
-    private GetBalanceController getBalanceController;
+    public static final BigDecimal ONE = BigDecimal.valueOf(1f);
+    private static TransferMoneyService transferMoneyServiceMock;
+    private TransferMoneyController transferMoneyController;
+    private HttpServerResponse responseMock;
 
     @Before
-    public void before(){
-        getBalanceController = setUpController();
+    public void before() {
+        setUpController();
     }
 
     @Test
     public void controllerSetsRightStatusCodeWhenBalanceRetrievesSuccess() {
 
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        when(getBalanceMock.get(any())).thenReturn(createSuccessfulResponse());
-        HttpServerResponse responseMock = mock(HttpServerResponse.class);
+        when(transferMoneyServiceMock.transfer(any(), any(), any())).thenReturn(createSuccessfulResponse());
 
-        getBalanceController.getBalance("1", responseMock);
+        JsonObject jsonObject = createRequestBodyJson();
+        transferMoneyController.transfer(jsonObject, responseMock);
 
-        verify(responseMock).end(captor.capture());
-        JsonObject object = expectedJson();
-        assertEquals(Json.encodePrettily(object), captor.getValue());
         verify(responseMock).setStatusCode(HttpResponseStatus.CREATED.code());
     }
 
     @Test
     public void controllerSetsRightStatusCodeWhenBalanceRetrievesError() {
-        HttpServerResponse responseMock = mock(HttpServerResponse.class);
-        when(getBalanceMock.get(any())).thenReturn(createErrorResponse());
 
-        getBalanceController.getBalance("1", responseMock);
+        when(transferMoneyServiceMock.transfer(any(), any(), any())).thenReturn(createErrorResponse());
+
+        JsonObject jsonObject = createRequestBodyJson();
+        transferMoneyController.transfer(jsonObject, responseMock);
 
         verify(responseMock).setStatusCode(HttpResponseStatus.BAD_REQUEST.code());
     }
 
-    private static GetBalanceController setUpController() {
-        getBalanceMock = mock(GetAccountBalanceService.class);
-        GetBalanceController getBalanceController = new GetBalanceController(getBalanceMock);
-        return getBalanceController;
+    @Test
+    public void parsesJsonCorrectly() {
+        when(transferMoneyServiceMock.transfer(any(), any(), any())).thenReturn(createSuccessfulResponse());
+
+        ArgumentCaptor<AccountId> accountsCaptor = ArgumentCaptor.forClass(AccountId.class);
+        ArgumentCaptor<Amount> amountCapture = ArgumentCaptor.forClass(Amount.class);
+
+        JsonObject jsonObject = createRequestBodyJson();
+        transferMoneyController.transfer(jsonObject, responseMock);
+
+        verify(transferMoneyServiceMock).transfer(accountsCaptor.capture(), accountsCaptor.capture(), amountCapture.capture());
+        assertEquals(AccountId.valueOf("1"),accountsCaptor.getAllValues().get(0));
+        assertEquals(AccountId.valueOf("2"),accountsCaptor.getAllValues().get(1));
+        assertEquals(Amount.valueOf(ONE), amountCapture.getValue());
     }
 
-    private static JsonObject expectedJson() {
-        JsonObject object = new JsonObject();
-        object.put(BALANCE, "1");
-        Json.encodePrettily(object);
-        return object;
+
+    private static JsonObject createRequestBodyJson() {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.put("from_account_id", "1");
+        jsonObject.put("to_account_id", "2");
+        jsonObject.put("amount", 1);
+        return jsonObject;
     }
 
-    private static CompletableFuture<GetBalanceResponse> createSuccessfulResponse() {
-        return CompletableFuture.completedFuture(GetBalanceResponse.createSuccessful(createBalance()));
+    private void setUpController() {
+        responseMock = mock(HttpServerResponse.class);
+        transferMoneyServiceMock = mock(TransferMoneyService.class);
+        transferMoneyController = new TransferMoneyController(transferMoneyServiceMock);
     }
 
-    private static CompletableFuture<GetBalanceResponse> createErrorResponse() {
-        return CompletableFuture.completedFuture(GetBalanceResponse.createError());
+    private static CompletableFuture<TransferMoneyResponse> createSuccessfulResponse() {
+        return CompletableFuture.completedFuture(TransferMoneyResponse.createSuccessful());
     }
 
-    private static Balance createBalance() {
-        return new Balance(BigDecimal.ONE);
+    private static CompletableFuture<TransferMoneyResponse> createErrorResponse() {
+        return CompletableFuture.completedFuture(TransferMoneyResponse.createError());
     }
 
 }

@@ -8,6 +8,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -21,11 +22,19 @@ public class GetBalanceControllerTest {
 
 
     public static final String BALANCE = "balance";
+    private static GetAccountBalanceService getBalanceMock;
+    private static GetBalanceController getBalanceController;
+
+    @Before
+    public void before(){
+        setUpController();
+    }
 
     @Test
     public void controllerSetsRightStatusCodeWhenBalanceRetrievesSuccess() {
+
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        GetBalanceController getBalanceController = setUpController();
+        when(getBalanceMock.get(any())).thenReturn(createSuccessfulResponse());
         HttpServerResponse responseMock = mock(HttpServerResponse.class);
 
         getBalanceController.getBalance("1", responseMock);
@@ -36,10 +45,19 @@ public class GetBalanceControllerTest {
         verify(responseMock).setStatusCode(HttpResponseStatus.CREATED.code());
     }
 
+    @Test
+    public void controllerSetsRightStatusCodeWhenBalanceRetrievesError() {
+        HttpServerResponse responseMock = mock(HttpServerResponse.class);
+        when(getBalanceMock.get(any())).thenReturn(createErrorResponse());
+
+        getBalanceController.getBalance("1", responseMock);
+
+        verify(responseMock).setStatusCode(HttpResponseStatus.BAD_REQUEST.code());
+    }
+
     private static GetBalanceController setUpController() {
-        GetAccountBalanceService getBalanceMock = mock(GetAccountBalanceService.class);
-        GetBalanceController getBalanceController = new GetBalanceController(getBalanceMock);
-        when(getBalanceMock.get(any())).thenReturn(createResponse());
+        getBalanceMock = mock(GetAccountBalanceService.class);
+        getBalanceController = new GetBalanceController(getBalanceMock);
         return getBalanceController;
     }
 
@@ -50,8 +68,12 @@ public class GetBalanceControllerTest {
         return object;
     }
 
-    private static CompletableFuture<GetBalanceResponse> createResponse() {
+    private static CompletableFuture<GetBalanceResponse> createSuccessfulResponse() {
         return CompletableFuture.completedFuture(GetBalanceResponse.createSuccessful(createBalance()));
+    }
+
+    private static CompletableFuture<GetBalanceResponse> createErrorResponse() {
+        return CompletableFuture.completedFuture(GetBalanceResponse.createError());
     }
 
     private static Balance createBalance() {
