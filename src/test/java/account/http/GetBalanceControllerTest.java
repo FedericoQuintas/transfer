@@ -1,6 +1,5 @@
 package account.http;
 
-import account.domain.VOs.AccountId;
 import account.domain.VOs.Balance;
 import account.domain.VOs.GetBalanceResponse;
 import account.domain.services.GetAccountBalanceService;
@@ -26,7 +25,7 @@ public class GetBalanceControllerTest {
     private static GetBalanceController getBalanceController;
 
     @Before
-    public void before(){
+    public void before() {
         setUpController();
     }
 

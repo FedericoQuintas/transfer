@@ -21,8 +21,10 @@ import static org.mockito.Mockito.*;
 
 public class TransferMoneyControllerTest {
 
-
-    public static final BigDecimal ONE = BigDecimal.valueOf(1f);
+    private static final BigDecimal ONE = BigDecimal.valueOf(1f);
+    private static final String FROM_ACCOUNT_ID = "from_account_id";
+    private static final String TO_ACCOUNT_ID = "to_account_id";
+    private static final String AMOUNT = "amount";
     private static TransferMoneyService transferMoneyServiceMock;
     private TransferMoneyController transferMoneyController;
     private HttpServerResponse responseMock;
@@ -73,9 +75,9 @@ public class TransferMoneyControllerTest {
 
     private static JsonObject createRequestBodyJson() {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.put("from_account_id", "1");
-        jsonObject.put("to_account_id", "2");
-        jsonObject.put("amount", 1);
+        jsonObject.put(FROM_ACCOUNT_ID, "1");
+        jsonObject.put(TO_ACCOUNT_ID, "2");
+        jsonObject.put(AMOUNT, 1);
         return jsonObject;
     }
 
